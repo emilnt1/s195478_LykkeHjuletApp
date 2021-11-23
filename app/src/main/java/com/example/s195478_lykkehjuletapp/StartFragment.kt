@@ -27,7 +27,9 @@ class StartFragment : Fragment() {
         _binding = FragmentStartBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        binding.btnStartGame.setOnClickListener{Navigation.findNavController(view).navigate(R.id.navigateToWordsFragment)}
+        binding.btnStartGame.setOnClickListener{
+            Navigation.findNavController(view).navigate(R.id.navigateToWordsFragment)
+        }
 
         return view
     }

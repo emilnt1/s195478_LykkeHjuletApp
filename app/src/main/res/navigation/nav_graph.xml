@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/wordsFragment"
-        android:name="com.example.s195478_lykkehjuletapp.wordsFragment"
+        android:name="com.example.s195478_lykkehjuletapp.WordsFragment"
         android:label="fragment_words"
         tools:layout="@layout/fragment_words" >
         <action

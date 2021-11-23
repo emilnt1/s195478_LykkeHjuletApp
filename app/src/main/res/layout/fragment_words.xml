@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".wordsFragment">
+    tools:context=".WordsFragment">
 
     <TextView
         android:id="@+id/categoryText"
@@ -29,16 +29,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/categoryText" />
 
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="(-"
+        android:backgroundTint="@color/design_default_color_secondary"
+        android:rotation="180"
+        android:src="@drawable/arrow_forward_black_24dp"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
     <TextView
         android:id="@+id/lifeText"
@@ -63,37 +66,44 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:gravity="center"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnginWheel">
+        app:layout_constraintTop_toBottomOf="@+id/spinnginWheel"
+        app:layout_constraintVertical_bias="0.112">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout2"
+            android:id="@+id/textInputLayout"
             android:layout_width="75dp"
             android:layout_height="60dp"
-            android:gravity="center_vertical"
             android:layout_marginRight="5dp"
+            android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusable="false"
                 android:hint="Letter"
-                android:maxLength="1" />
+                android:maxLength="1"
+                android:text="" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btnGuess"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:gravity="center_vertical"
 
             android:text="Guess Letter" />
@@ -109,6 +119,40 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wheelText" />
+
+    <TextView
+        android:id="@+id/wordText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Word to be displayed"
+        android:textSize="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.482"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/boxesOfWords" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/boxesOfWords"
+        android:layout_width="408dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryText" />
+
+    <TextView
+        android:id="@+id/guessedLetters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
