@@ -1,22 +1,20 @@
 package com.example.s195478_lykkehjuletapp
 
 import android.content.ContentValues.TAG
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.get
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.RotateAnimation
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.navArgs
-import com.example.s195478_lykkehjuletapp.databinding.FragmentStartBinding
 import com.example.s195478_lykkehjuletapp.databinding.FragmentWordsBinding
 import android.widget.EditText
-import android.widget.LinearLayout
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
@@ -29,12 +27,17 @@ class WordsFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private var amount: Int = 0
-    private var player = PlayerData(0,5)
-    private var guessedLetters = mutableListOf<Char>()
+//    private var amount: Int = 0
+//    private var player = PlayerData(0,5)
+//    private var guessedLetters = mutableListOf<Char>()
+//    private var checkFlag = 0
+//    private val category = Category.values().random()
+//    private val word = ListOfWords.generateWord(category)
+//    private val hiddenWord = ListOfWords.genereateHiddenWord(word)
+    private lateinit var wordAdapter: WordAdapter //= WordAdapter(hiddenWord)
+    private lateinit var layoutManager: FlexboxLayoutManager
+    private lateinit var viewModel:WordsFragmentViewModel //= ViewModelProvider(this).get(WordsFragmentViewModel::class.java)
     private var checkFlag = 0
-    private val category = Category.values().random()
-    private val word = ListOfWords.generateWord(category)
 
 
     override fun onCreateView(
@@ -45,52 +48,56 @@ class WordsFragment : Fragment() {
         _binding = FragmentWordsBinding.inflate(inflater,container,false)
         val view = binding.root
 
-        binding.btnBack.setOnClickListener { Navigation.findNavController(view).navigate(R.id.navigateToStartFragment) }
+        viewModel = ViewModelProvider(this).get(WordsFragmentViewModel::class.java)
+        // creating the recycler view for the hidden word boxes
+        wordAdapter = WordAdapter(viewModel.hiddenWord)
+        binding.boxesOfWords.adapter = wordAdapter
+        layoutManager = FlexboxLayoutManager(context)
+        layoutManager.flexDirection = FlexDirection.ROW
+        layoutManager.justifyContent = JustifyContent.CENTER
+        binding.boxesOfWords.layoutManager = layoutManager
+
+        binding.btnBack.setOnClickListener { Navigation.findNavController(view).navigate(R.id.action_wordsFragment_to_startFragment) }
         binding.spinnginWheel.setOnClickListener {
             if (!binding.btnGuess.isEnabled) {
-                spinWheel()
+                spinWheel(view)
             }
         }
 
 
-
-        var hiddenWord = ""
-        val wordChars = word.toCharArray()
+        val wordChars = viewModel.word.toCharArray()
         for (i in wordChars.indices){
             wordChars[i] = '_'
         }
-        hiddenWord = String(wordChars)
+        viewModel.hiddenWord = String(wordChars)
 
-        binding.categoryText.text = category.name
-        binding.wordText.text = word
+        binding.categoryText.text = viewModel.category.name
+        binding.wordText.text = viewModel.word
         binding.btnGuess.setOnClickListener {
             if (binding.textInput.text.toString().isNotEmpty()) {
                 val letter = binding.textInput.text.toString().first()
                 Log.d(TAG, "onCreateView: $letter")
-                checkLetter(letter, word)
+                checkLetter(letter, viewModel.word)
             }
         }
-
-
-        val wordAdapter = WordAdapter(hiddenWord)
-        binding.boxesOfWords.adapter = wordAdapter
-        val mLayoutManager = FlexboxLayoutManager(context)
-        mLayoutManager.flexDirection = FlexDirection.ROW
-        mLayoutManager.justifyContent = JustifyContent.FLEX_START
-        binding.boxesOfWords.layoutManager = mLayoutManager
-
-
-
 
         return view
     }
 
-    fun spinWheel() {
+    fun spinWheel(view: View) {
+
+        animateSpinningWheel()
 
         val outcome = WheelOutcome.randomWheelSpin()
 
         //binding.wheelText.text = outcome.name
 
+        if (viewModel.player.life <=0){
+            loseGameScreen(view)
+        } else if (viewModel.word.equals(viewModel.hiddenWord)){
+            winGameScreen(view)
+        }
+        Thread.sleep(1500)
         when(outcome){
             Outcomes.VALUE -> displayAmount()
             Outcomes.EXTRATURN -> extraTurn()
@@ -98,73 +105,75 @@ class WordsFragment : Fragment() {
             Outcomes.BANKRUPT -> bankruptPlayer()
         }
 
-        if (player.life <= 0){
-            endGameScreen()
-        }
+
         //Toast.makeText(context,"The wheel was spun",Toast.LENGTH_SHORT).show()
 
     }
 
     fun displayAmount(){
-        amount = 100 * (10..20).random()
-        binding.wheelText.text = amount.toString()
+        viewModel.amount = 100 * (10..20).random()
+        binding.wheelText.text = viewModel.amount.toString()
         enableEditText(binding.textInput)
         binding.btnGuess.isEnabled = true
 
     }
 
     fun extraTurn(){
-        player.addLife()
-        binding.lifeText.text = player.life.toString()
+        viewModel.player.addLife()
+        binding.lifeText.text = "Life: " + viewModel.player.life.toString()
         disableEditText(binding.textInput)
         binding.btnGuess.isEnabled = false
         binding.wheelText.text = "Extra Turn"
     }
 
     fun missTurn(){
-        player.removeLife()
-        binding.lifeText.text = player.life.toString()
+        viewModel.player.removeLife()
+        binding.lifeText.text = "Life: " +  viewModel.player.life.toString()
         disableEditText(binding.textInput)
         binding.btnGuess.isEnabled = false
         binding.wheelText.text = "Miss Turn"
     }
 
     fun bankruptPlayer(){
-        player.bankruptPlayer()
-        binding.pointText.text = player.score.toString()
+        viewModel.player.bankruptPlayer()
+        binding.pointText.text = "Score: " + viewModel.player.score.toString()
         disableEditText(binding.textInput)
         binding.btnGuess.isEnabled = false
         binding.wheelText.text = "Bankrupt"
     }
 
     fun checkLetter(letter: Char, word: String){
-        val guessedLetter = letter.lowercaseChar()
-
+        val guessedLetter = letter.uppercaseChar()
 
         for (i in word.indices){
-            if (letter.equals("")){
+            if (guessedLetter.equals("")){
                 break
             }
-            Log.d(TAG, "checkLetter: " + (letter == word[i]))
-            if (letter == word[i] && !guessedLetters.contains(letter)){
-                player.score += amount
-                Log.d(TAG, "checkLetter: " + player.score)
-                binding.pointText.text = player.score.toString()
-                guessedLetters.add(letter)
+            Log.d(TAG, "checkLetter: " + (guessedLetter == word[i]))
+            if (guessedLetter == word[i] && !viewModel.guessedLetters.contains(guessedLetter)){
+                viewModel.player.score += viewModel.amount
+                Log.d(TAG, "checkLetter: playerscore = " + viewModel.player.score )
+                binding.pointText.text = "Score: " + viewModel.player.score.toString()
+
+                viewModel.hiddenWord = changeCharInString(i, guessedLetter, viewModel.hiddenWord)
+                Log.d(TAG, "checkLetter: hidden word is = ${viewModel.hiddenWord}")
                 checkFlag++
+                wordAdapter.setData(viewModel.hiddenWord)
+                wordAdapter.notifyItemChanged(i)
 
             }
         }
-        if (checkFlag <= 0 && !guessedLetters.contains(letter)){
-            player.removeLife()
-            binding.lifeText.text = player.life.toString()
+        if (checkFlag <= 0 && !viewModel.guessedLetters.contains(guessedLetter)){
+            viewModel.player.removeLife()
+            binding.lifeText.text = "Life: " + viewModel.player.life.toString()
             disableEditText(binding.textInput)
             binding.wheelText.text = "Spin the wheel again"
             binding.btnGuess.isEnabled = false
-            guessedLetters.add(letter)
+
         }
 
         checkFlag = 0
+        viewModel.guessedLetters.add(guessedLetter)
         binding.textInput.setText("")
         writeGuessedLetter()
 
@@ -190,7 +199,7 @@ class WordsFragment : Fragment() {
 
     fun writeGuessedLetter(){
         var tempWord = "Guessed letters: \n"
-        for (i in guessedLetters){
+        for (i in viewModel.guessedLetters){
 
                 tempWord = "$tempWord $i,"
 
@@ -199,15 +208,28 @@ class WordsFragment : Fragment() {
         binding.guessedLetters.text = tempWord
     }
 
-    fun endGameScreen(){
+    fun loseGameScreen(view: View){
+        Navigation.findNavController(view).navigate(R.id.action_wordsFragment_to_loseGameFragment)
+    }
 
+    fun winGameScreen(view: View){
+        Navigation.findNavController(view).navigate(R.id.action_wordsFragment_to_winGameFragment)
     }
 
     fun animateSpinningWheel(){
-
+        val rotateAnimation = AnimationUtils.loadAnimation(context,R.anim.rotate_wheel)
+        binding.spinnginWheel.startAnimation(rotateAnimation)
     }
 
 
 }
+
+private fun changeCharInString(i: Int, letter: Char, hiddenWord: String): String {
+    val chars = hiddenWord.toCharArray()
+    chars[i] = letter
+    return String(chars)
+}
+
+
 
 

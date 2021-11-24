@@ -20,7 +20,30 @@
         android:label="fragment_words"
         tools:layout="@layout/fragment_words" >
         <action
-            android:id="@+id/navigateToStartFragment"
+            android:id="@+id/action_wordsFragment_to_loseGameFragment"
+            app:destination="@id/loseGameFragment" />
+        <action
+            android:id="@+id/action_wordsFragment_to_winGameFragment"
+            app:destination="@id/winGameFragment" />
+        <action
+            android:id="@+id/action_wordsFragment_to_startFragment"
+            app:destination="@id/startFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loseGameFragment"
+        android:name="com.example.s195478_lykkehjuletapp.LoseGameFragment"
+        android:label="fragment_win_game"
+        tools:layout="@layout/fragment_win_game" >
+        <action
+            android:id="@+id/action_loseGameFragment_to_startFragment"
+            app:destination="@id/startFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/winGameFragment"
+        android:name="com.example.s195478_lykkehjuletapp.WinGameFragment"
+        android:label="WinGameFragment" >
+        <action
+            android:id="@+id/action_winGameFragment_to_startFragment"
             app:destination="@id/startFragment" />
     </fragment>
 </navigation>
