@@ -15,10 +15,11 @@ import androidx.navigation.fragment.navArgs
 import com.example.s195478_lykkehjuletapp.databinding.FragmentStartBinding
 import com.example.s195478_lykkehjuletapp.databinding.FragmentWordsBinding
 import android.widget.EditText
-
-
-
-
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 
 
 class WordsFragment : Fragment() {
@@ -32,6 +33,9 @@ class WordsFragment : Fragment() {
     private var player = PlayerData(0,5)
     private var guessedLetters = mutableListOf<Char>()
     private var checkFlag = 0
+    private val category = Category.values().random()
+    private val word = ListOfWords.generateWord(category)
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,8 +52,14 @@ class WordsFragment : Fragment() {
             }
         }
 
-        val category = Category.values().random()
-        val word = ListOfWords.generateWord(category)
+
+
+        var hiddenWord = ""
+        val wordChars = word.toCharArray()
+        for (i in wordChars.indices){
+            wordChars[i] = '_'
+        }
+        hiddenWord = String(wordChars)
 
         binding.categoryText.text = category.name
         binding.wordText.text = word
@@ -60,6 +70,14 @@ class WordsFragment : Fragment() {
                 checkLetter(letter, word)
             }
         }
+
+
+        val wordAdapter = WordAdapter(hiddenWord)
+        binding.boxesOfWords.adapter = wordAdapter
+        val mLayoutManager = FlexboxLayoutManager(context)
+        mLayoutManager.flexDirection = FlexDirection.ROW
+        mLayoutManager.justifyContent = JustifyContent.FLEX_START
+        binding.boxesOfWords.layoutManager = mLayoutManager
 
 
 
@@ -132,6 +150,7 @@ class WordsFragment : Fragment() {
                 player.score += amount
                 Log.d(TAG, "checkLetter: " + player.score)
                 binding.pointText.text = player.score.toString()
+                guessedLetters.add(letter)
                 checkFlag++
 
             }
@@ -142,8 +161,9 @@ class WordsFragment : Fragment() {
             disableEditText(binding.textInput)
             binding.wheelText.text = "Spin the wheel again"
             binding.btnGuess.isEnabled = false
+            guessedLetters.add(letter)
         }
-        guessedLetters.add(letter)
+
         checkFlag = 0
         binding.textInput.setText("")
         writeGuessedLetter()

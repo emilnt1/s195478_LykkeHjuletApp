@@ -22,12 +22,12 @@
         android:id="@+id/wheelText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="208dp"
+        android:layout_marginTop="32dp"
         android:text="Press wheel to spin"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/categoryText" />
+        app:layout_constraintTop_toBottomOf="@+id/wordBoxLayout" />
 
     <ImageButton
         android:id="@+id/btnBack"
@@ -113,7 +113,7 @@
         android:id="@+id/spinnginWheel"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:src="@drawable/spinnginwheel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -124,31 +124,48 @@
         android:id="@+id/wordText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="36dp"
         android:text="Word to be displayed"
-        android:textSize="32dp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.482"
+        app:layout_constraintHorizontal_bias="0.946"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/boxesOfWords" />
+        app:layout_constraintTop_toBottomOf="@+id/pointText" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/boxesOfWords"
-        android:layout_width="408dp"
-        android:layout_height="110dp"
-        android:layout_marginTop="24dp"
+    <LinearLayout
+        android:id="@+id/wordBoxLayout"
+        android:layout_width="411dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="16dp"
+
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/categoryText" />
+        app:layout_constraintTop_toBottomOf="@+id/categoryText">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/boxesOfWords"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/guessedLetters"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="TextView"
+        android:text="Guessed letter: "
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
