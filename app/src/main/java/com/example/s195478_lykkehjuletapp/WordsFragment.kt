@@ -1,8 +1,12 @@
 package com.example.s195478_lykkehjuletapp
 
+import android.app.Activity
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +15,14 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.RotateAnimation
+import android.view.inputmethod.InputMethodManager
 import androidx.navigation.Navigation
 import com.example.s195478_lykkehjuletapp.databinding.FragmentWordsBinding
 import android.widget.EditText
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
@@ -27,18 +35,10 @@ class WordsFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-//    private var amount: Int = 0
-//    private var player = PlayerData(0,5)
-//    private var guessedLetters = mutableListOf<Char>()
-//    private var checkFlag = 0
-//    private val category = Category.values().random()
-//    private val word = ListOfWords.generateWord(category)
-//    private val hiddenWord = ListOfWords.genereateHiddenWord(word)
     private lateinit var wordAdapter: WordAdapter //= WordAdapter(hiddenWord)
     private lateinit var layoutManager: FlexboxLayoutManager
     private lateinit var viewModel:WordsFragmentViewModel //= ViewModelProvider(this).get(WordsFragmentViewModel::class.java)
     private var checkFlag = 0
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,10 +57,19 @@ class WordsFragment : Fragment() {
         layoutManager.justifyContent = JustifyContent.CENTER
         binding.boxesOfWords.layoutManager = layoutManager
 
+        binding.textInput.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                //Perform Code
+                return@OnKeyListener true
+            }
+            false
+        })
+
+
         binding.btnBack.setOnClickListener { Navigation.findNavController(view).navigate(R.id.action_wordsFragment_to_startFragment) }
         binding.spinnginWheel.setOnClickListener {
             if (!binding.btnGuess.isEnabled) {
-                spinWheel(view)
+                spinWheel()
             }
         }
 
@@ -84,29 +93,23 @@ class WordsFragment : Fragment() {
         return view
     }
 
-    fun spinWheel(view: View) {
-
+    fun spinWheel() {
         animateSpinningWheel()
-
         val outcome = WheelOutcome.randomWheelSpin()
 
         //binding.wheelText.text = outcome.name
+        //loseGameScreen()
 
-        if (viewModel.player.life <=0){
-            loseGameScreen(view)
-        } else if (viewModel.word.equals(viewModel.hiddenWord)){
-            winGameScreen(view)
-        }
-        Thread.sleep(1500)
-        when(outcome){
+        when (outcome) {
             Outcomes.VALUE -> displayAmount()
             Outcomes.EXTRATURN -> extraTurn()
             Outcomes.MISSTURN -> missTurn()
             Outcomes.BANKRUPT -> bankruptPlayer()
         }
 
-
+        isGameOver()
         //Toast.makeText(context,"The wheel was spun",Toast.LENGTH_SHORT).show()
+
 
     }
 
@@ -173,9 +176,12 @@ class WordsFragment : Fragment() {
         }
 
         checkFlag = 0
-        viewModel.guessedLetters.add(guessedLetter)
+        if (!viewModel.guessedLetters.contains(guessedLetter)){
+            viewModel.guessedLetters.add(guessedLetter)
+        }
         binding.textInput.setText("")
         writeGuessedLetter()
+        isGameOver()
 
     }
 
@@ -208,17 +214,28 @@ class WordsFragment : Fragment() {
         binding.guessedLetters.text = tempWord
     }
 
-    fun loseGameScreen(view: View){
-        Navigation.findNavController(view).navigate(R.id.action_wordsFragment_to_loseGameFragment)
+    fun isGameOver(){
+        if (viewModel.player.life <=0){
+            loseGameScreen()
+        } else if (viewModel.word.equals(viewModel.hiddenWord)){
+            winGameScreen()
+        }
     }
 
-    fun winGameScreen(view: View){
-        Navigation.findNavController(view).navigate(R.id.action_wordsFragment_to_winGameFragment)
+    fun loseGameScreen(){
+        val action = WordsFragmentDirections.actionWordsFragmentToGameEndDialog(false)
+        binding.root.findNavController().navigate(action)
+    }
+
+    fun winGameScreen(){
+        val action = WordsFragmentDirections.actionWordsFragmentToGameEndDialog(true)
+        binding.root.findNavController().navigate(action)
     }
 
     fun animateSpinningWheel(){
         val rotateAnimation = AnimationUtils.loadAnimation(context,R.anim.rotate_wheel)
         binding.spinnginWheel.startAnimation(rotateAnimation)
+
     }
 
 
@@ -229,6 +246,8 @@ private fun changeCharInString(i: Int, letter: Char, hiddenWord: String): String
     chars[i] = letter
     return String(chars)
 }
+
+
 
 
 
