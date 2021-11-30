@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.navigation.Navigation
 import com.example.s195478_lykkehjuletapp.databinding.FragmentWordsBinding
 import android.widget.EditText
+import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
@@ -35,9 +36,9 @@ class WordsFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var wordAdapter: WordAdapter //= WordAdapter(hiddenWord)
+    private lateinit var wordAdapter: WordAdapter
     private lateinit var layoutManager: FlexboxLayoutManager
-    private lateinit var viewModel:WordsFragmentViewModel //= ViewModelProvider(this).get(WordsFragmentViewModel::class.java)
+    private lateinit var viewModel:WordsFragmentViewModel
     private var checkFlag = 0
 
     override fun onCreateView(
@@ -57,13 +58,20 @@ class WordsFragment : Fragment() {
         layoutManager.justifyContent = JustifyContent.CENTER
         binding.boxesOfWords.layoutManager = layoutManager
 
+
         binding.textInput.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 //Perform Code
+                    v.performClick()
+                binding.wheelText.text = "helloe"
+                Toast.makeText(context,"Hello Toaster", Toast.LENGTH_SHORT).show()
                 return@OnKeyListener true
             }
             false
         })
+
+
+        binding.textInput.setOnClickListener {  }
 
 
         binding.btnBack.setOnClickListener { Navigation.findNavController(view).navigate(R.id.action_wordsFragment_to_startFragment) }
@@ -88,10 +96,14 @@ class WordsFragment : Fragment() {
                 Log.d(TAG, "onCreateView: $letter")
                 checkLetter(letter, viewModel.word)
             }
+            val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+
         }
 
         return view
     }
+
 
     fun spinWheel() {
         animateSpinningWheel()
@@ -163,6 +175,9 @@ class WordsFragment : Fragment() {
                 checkFlag++
                 wordAdapter.setData(viewModel.hiddenWord)
                 wordAdapter.notifyItemChanged(i)
+                disableEditText(binding.textInput)
+                binding.wheelText.text = "Correct spin again"
+                binding.btnGuess.isEnabled = false
 
             }
         }
@@ -170,7 +185,7 @@ class WordsFragment : Fragment() {
             viewModel.player.removeLife()
             binding.lifeText.text = "Life: " + viewModel.player.life.toString()
             disableEditText(binding.textInput)
-            binding.wheelText.text = "Spin the wheel again"
+            binding.wheelText.text = "Wrong spin again"
             binding.btnGuess.isEnabled = false
 
         }
@@ -239,6 +254,9 @@ class WordsFragment : Fragment() {
     }
 
 
+
+
+
 }
 
 private fun changeCharInString(i: Int, letter: Char, hiddenWord: String): String {
@@ -246,6 +264,7 @@ private fun changeCharInString(i: Int, letter: Char, hiddenWord: String): String
     chars[i] = letter
     return String(chars)
 }
+
 
 
 
