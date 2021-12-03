@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+// inspiration taken from https://developer.android.com/guide/topics/ui/layout/recyclerview
 class WordAdapter (private var dataSet: String) : RecyclerView.Adapter<WordAdapter.ViewHolder>(){
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
