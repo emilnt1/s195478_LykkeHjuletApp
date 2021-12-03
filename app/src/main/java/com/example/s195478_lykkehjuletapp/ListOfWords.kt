@@ -8,9 +8,11 @@ import java.util.*
 //Inspiration from https://www.baeldung.com/kotlin/enum
 enum class Category(val words: List<String>){
 
-    ANIMALS(listOf<String>("dog", "cat")),
-    FOOD(listOf<String>("carrot", "tomato")),
-    TREES(listOf<String>("birch", "redwood"))
+    ANIMALS(listOf<String>("dog", "cat", "dingo", "kangaroo")),
+    FOOD(listOf<String>("carrot", "tomato", "lasagne", "ravioli")),
+    TREES(listOf<String>("birch", "redwood", "maple", "oak", "baobab")),
+    COUNTRIES(listOf<String>("denmark", "america", "russia", "bulgaria"))
+
 }
 
 object ListOfWords{

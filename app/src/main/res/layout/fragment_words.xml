@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WordsFragment"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    tools:context=".WordsFragment">
 
     <TextView
         android:id="@+id/categoryText"
@@ -94,13 +94,13 @@
                 android:id="@+id/textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 android:focusable="false"
                 android:gravity="center"
                 android:hint="Letter"
-                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                android:singleLine="true"
                 android:imeOptions="actionDone"
                 android:maxLength="1"
+                android:singleLine="true"
                 android:text="" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -178,6 +178,19 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wordBoxLayout" />
+
+    <TextView
+        android:id="@+id/cheatWord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:rotation="180"
+        android:text="Cheatword"
+        android:textColor="@color/cheatColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

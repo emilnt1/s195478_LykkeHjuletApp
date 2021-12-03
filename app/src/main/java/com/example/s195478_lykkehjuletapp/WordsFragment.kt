@@ -57,6 +57,8 @@ class WordsFragment : Fragment() {
         layoutManager.flexDirection = FlexDirection.ROW
         layoutManager.justifyContent = JustifyContent.CENTER
         binding.boxesOfWords.layoutManager = layoutManager
+        
+        binding.cheatWord.text = viewModel.word
 
 
         binding.textInput.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
